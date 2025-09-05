@@ -1,0 +1,143 @@
+Digital Studies 101 - Python Lessons
+Installation Requirements
+========================================
+
+SYSTEM REQUIREMENTS
+-------------------
+- Python 3.8 or higher (recommended: Python 3.9+)
+- pip package manager
+- Internet connection for downloading packages and models
+- 2GB+ free disk space for all packages and models
+
+COMPATIBLE OPERATING SYSTEMS
+-----------------------------
+- Windows 10/11
+- macOS 10.15+ (Catalina or newer)
+- Linux (Ubuntu 18.04+ or equivalent)
+
+PYTHON PACKAGES
+---------------
+
+Core Data Science:
+- pandas          # Data manipulation and analysis
+- numpy           # Numerical computing
+- matplotlib      # Basic plotting and visualization
+
+Interactive Visualization:
+- plotly          # Interactive charts and maps
+- mapclassify     # Geographic data classification
+
+Web Scraping (Lesson 1):
+- praw            # Python Reddit API Wrapper
+- requests        # HTTP library
+
+Natural Language Processing (Lessons 4-5):
+- nltk            # Natural Language Toolkit
+- spacy           # Advanced NLP library
+- geoparser       # Geographic entity recognition
+- transformers    # Hugging Face transformers (RoBERTa)
+- torch           # PyTorch (backend for transformers)
+- scipy           # Scientific computing
+
+Utilities:
+- tqdm            # Progress bars
+
+
+NLTK DATA PACKAGES
+------------------
+- punkt           # Sentence tokenization (Lesson 4)
+- vader_lexicon   # Sentiment analysis lexicon (Lesson 5)
+
+SPACY LANGUAGE MODELS
+---------------------
+- en_core_web_md  # Medium English model (earlier lessons)
+- en_core_web_trf # Transformer English model (advanced lessons)
+
+EXTERNAL DATABASES
+------------------
+- GeoNames Database # Geographic name database (auto-downloaded by geoparser)
+
+INSTALLATION METHODS
+--------------------
+
+Method 1 - Automated Installation (Recommended):
+Run the provided installation script:
+    python installs_required.py
+
+Method 2 - Manual Installation:
+Install packages individually using pip:
+    pip install pandas numpy matplotlib plotly mapclassify
+    pip install praw requests beautifulsoup4 tqdm jupyter ipywidgets
+    pip install nltk spacy geoparser transformers torch scipy
+    
+Download NLTK data:
+    python -c "import nltk; nltk.download('punkt'); nltk.download('vader_lexicon')"
+    
+Download spaCy models:
+    python -m spacy download en_core_web_md
+    python -m spacy download en_core_web_trf
+    
+Setup geoparser database:
+    python -m geoparser download geonames
+
+LESSON-SPECIFIC REQUIREMENTS
+-----------------------------
+
+Lesson 1 - Reddit Scraping:
+- praw, pandas, requests
+
+Lesson 2 - Basic Python:
+- pandas, matplotlib
+
+Lesson 3 - Data Wrangling:
+- pandas, plotly
+
+Lesson 4 - Location Extraction:
+- spacy (en_core_web_md, en_core_web_trf)
+- geoparser + GeoNames database
+- nltk + punkt tokenizer
+
+Lesson 5 - Sentiment Analysis:
+- nltk + vader_lexicon
+- transformers + torch + scipy
+- plotly (for visualization)
+
+TROUBLESHOOTING
+---------------
+
+Common Issues:
+1. Python version too old - Upgrade to Python 3.8+
+2. pip not found - Install/update pip
+3. Network timeouts - Retry installation, check internet connection
+4. Disk space - Ensure 2GB+ free space for all models
+5. Permission errors - Run as administrator (Windows) or use sudo (macOS/Linux)
+
+For spaCy model download issues:
+    python -m spacy validate
+    
+For geoparser database issues:
+    python -c "from geoparser import Geoparser; Geoparser()"
+
+ESTIMATED INSTALLATION TIME
+---------------------------
+- Core packages: 5-10 minutes
+- spaCy models: 10-15 minutes  
+- GeoNames database: 15-30 minutes
+- Total: 30-60 minutes (depending on internet speed)
+
+ESTIMATED DISK SPACE
+---------------------
+- Python packages: ~500MB
+- spaCy models: ~500MB
+- GeoNames database: ~1GB
+- Total: ~2GB
+
+SUPPORT
+-------
+If you encounter issues, check:
+1. Python version compatibility
+2. Internet connection stability
+3. Available disk space
+4. Run the automated installer: python installs_required.py
+
+Last updated: September 2025
