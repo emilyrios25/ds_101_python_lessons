@@ -343,6 +343,18 @@ paket-files/
 **/__pycache__/
 *.pyc
 
+# Reddit API credentials and lesson-specific files
+reddit_config.py
+*.env
+
+# Reddit scraping output files
+reddit_comments_*.csv
+reddit_text_analysis_*.csv
+reddit_voyant_*.txt
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
 # Cake - Uncomment if you are using it
 #tools/**
 #!tools/packages.config
@@ -416,3 +428,7 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+#Python files
+encrypted_credentials.py
+lesson_1_scraping_reddit/encrypt_credentials.py
