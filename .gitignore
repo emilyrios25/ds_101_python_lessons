@@ -432,3 +432,4 @@ FodyWeavers.xsd
 #Python files
 encrypted_credentials.py
 lesson_1_scraping_reddit/encrypt_credentials.py
+gazetteer.py
