@@ -48,6 +48,55 @@ for package, path in packages:
         print(f"❌ Failed to setup NLTK data: {e}")
         return False
 
+def setup_roberta_model_in_venv(venv_python):
+    """Pre-download RoBERTa model to avoid classroom delays."""
+    print("\n🤖 Pre-downloading RoBERTa sentiment model...")
+    print("📊 This downloads ~500MB and prevents delays during class")
+    print("📺 You will see the download progress below:")
+    
+    roberta_script = '''
+import os
+import sys
+
+try:
+    print("🔄 Loading RoBERTa model (this may take a few minutes)...")
+    
+    from transformers import AutoTokenizer, AutoModelForSequenceClassification
+    
+    MODEL = "cardiffnlp/twitter-roberta-base-sentiment"
+    
+    # Download and cache the model components
+    print("📥 Downloading tokenizer...")
+    tokenizer = AutoTokenizer.from_pretrained(MODEL)
+    
+    print("📥 Downloading model...")
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+    
+    print("✅ RoBERTa model downloaded and cached successfully!")
+    print("💡 Model files are now available for instant loading during lessons")
+    
+except ImportError as e:
+    print(f"⚠️ Transformers library not available: {e}")
+    print("This is OK - RoBERTa will download when first used")
+    sys.exit(0)
+except Exception as e:
+    print(f"⚠️ Could not pre-download RoBERTa model: {e}")
+    print("This is OK - model will download when first used in lessons")
+    sys.exit(0)
+'''
+    
+    try:
+        # Use a longer timeout for model download
+        subprocess.check_call([venv_python, "-c", roberta_script], timeout=900)  # 15 minutes max
+        return True
+    except subprocess.TimeoutExpired:
+        print("⚠️ RoBERTa download timeout - model will download during lessons")
+        return False
+    except subprocess.CalledProcessError as e:
+        print(f"⚠️ RoBERTa pre-download failed: {e}")
+        print("This is OK - model will download when first used")
+        return False
+
 def setup_spacy_models_in_venv(venv_python):
     """Download required spaCy language models using venv python."""
     print("🤖 Setting up spaCy models...")
@@ -331,6 +380,9 @@ def main():
     setup_nltk_data_in_venv(python_exe)
     setup_spacy_models_in_venv(python_exe)
     setup_geoparser_in_venv(python_exe)
+    
+    # Step 5.6: Pre-download RoBERTa model for sentiment analysis
+    setup_roberta_model_in_venv(python_exe)
     
     # Step 6: Create VS Code settings
     print("⚙️  Creating VS Code settings...")

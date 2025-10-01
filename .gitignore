@@ -12,9 +12,9 @@
 *.env
 
 # User-specific files (MonoDevelop/Xamarin Studio# Reddit scraping output files
-reddit_comments_*.csv
-reddit_text_analysis_*.csv
-reddit_voyant_*.txt
+#reddit_comments_*.csv
+#reddit_text_analysis_*.csv
+#reddit_voyant_*.txt
 
 # Exception: Include backup/sample data files for lessons
 !lesson_1_scraping_reddit/data/backup/reddit_text_analysis_*.csv
@@ -278,7 +278,9 @@ Generated_Code/
 # to a newer Visual Studio version. Backup files are not needed,
 # because we have git ;-)
 _UpgradeReport_Files/
-Backup*/
+Backup*/ 
+# Exception: Allow lesson data backup folders
+!**/data/backup/
 UpgradeLog*.XML
 UpgradeLog*.htm
 ServiceFabricBackup/
