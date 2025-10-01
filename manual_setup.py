@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 """
 Manual Virtual Environment Setup for DS101
-A simpler, more reliable approach that ensures VS Code recognition
+A simpler, more relia        print("\n🌍 Downloading GeoNames database...")
+        print("📊 This downloads ~1GB of geographic data and may take some time")
+        print("📺 You will see the download progress below:") approach that ensures VS Code recognition
 """
 
 import os
@@ -50,7 +52,7 @@ def setup_spacy_models_in_venv(venv_python):
     """Download required spaCy language models using venv python."""
     print("🤖 Setting up spaCy models...")
     
-    models = ["en_core_web_sm", "en_core_web_md"]
+    models = ["en_core_web_sm", "en_core_web_md", "en_core_web_trf"]
     for model_name in models:
         try:
             print(f"📥 Downloading spaCy model: {model_name}...")
@@ -61,20 +63,89 @@ def setup_spacy_models_in_venv(venv_python):
 
 def setup_geoparser_in_venv(venv_python):
     """Setup geoparser and download GeoNames database using venv python."""
-    print("🌍 Setting up geoparser...")
+    print("\n🌍 Setting up geoparser...")
+    
+    # First check if geoparser is even installed
+    try:
+        subprocess.run([venv_python, "-c", "import geoparser"], 
+                      check=True, capture_output=True)
+        print("✅ Geoparser package is installed")
+    except subprocess.CalledProcessError:
+        print("❌ Geoparser not installed - this should have been installed in the previous step")
+        print("💡 Try running the script again or install manually: pip install geoparser")
+        return False
+    
+    # Check if GeoNames data is already downloaded
+    print("🔍 Checking for existing GeoNames database...")
+    try:
+        result = subprocess.run([venv_python, "-c", 
+                               "import geoparser; gn = geoparser.GeoNames(); print('Data available' if gn.data_dir.exists() else 'No data')"],
+                              capture_output=True, text=True)
+        if "Data available" in result.stdout:
+            print("✅ GeoNames database already available")
+            return True
+        else:
+            print("📥 GeoNames database not found, downloading...")
+    except subprocess.CalledProcessError:
+        print("📥 Could not verify existing data, proceeding with download...")
     
     try:
-        print("📥 Downloading GeoNames database (this may take a while)...")
-        print("💾 This will download ~1GB of geographic data")
+        print("\n🌍 Downloading GeoNames database...")
+        print("� This downloads ~1GB of geographic data and may take 10-15 minutes")
+        print("📺 You will see the download progress below:")
+        print(f"🔧 Command: {venv_python} -m geoparser download geonames")
+        print("-" * 60)
         
-        subprocess.check_call([venv_python, "-m", "geoparser", "download", "geonames"])
-        print("✅ GeoNames database downloaded successfully")
-        return True
+        # Show real-time output by not capturing it
+        result = subprocess.run([venv_python, "-m", "geoparser", "download", "geonames"])
+        
+        print("-" * 60)
+        if result.returncode == 0:
+            print("✅ GeoNames database downloaded successfully")
+            return True
+        else:
+            print(f"❌ Geoparser download failed with return code {result.returncode}")
+            return False
         
     except subprocess.CalledProcessError as e:
-        print(f"⚠️ Failed to setup geoparser: {e}")
-        print("💡 You can set this up later by activating the environment and running: python -m geoparser download geonames")
+        print(f"\n❌ Failed to download GeoNames database: {e}")
+        print("💡 You can try again later by running:")
+        print(f"   {venv_python} -m geoparser download geonames")
         return False
+    except KeyboardInterrupt:
+        print("\n🛑 Download cancelled by user")
+        print("💡 You can resume later by running:")
+        print(f"   {venv_python} -m geoparser download geonames")
+        return False
+
+def check_packages_installed(python_exe, packages):
+    """Check if required packages are installed in the environment."""
+    print("🔍 Checking existing packages...")
+    missing_packages = []
+    
+    for package in packages:
+        try:
+            subprocess.run([python_exe, "-c", f"import {package.replace('-', '_')}"], 
+                         check=True, capture_output=True)
+            print(f"   ✅ {package} is installed")
+        except subprocess.CalledProcessError:
+            missing_packages.append(package)
+            print(f"   ❌ {package} is missing")
+        except Exception:
+            # For packages with different import names, just try pip show
+            try:
+                result = subprocess.run([python_exe, "-m", "pip", "show", package], 
+                                      check=True, capture_output=True)
+                if result.returncode == 0:
+                    print(f"   ✅ {package} is installed")
+                else:
+                    missing_packages.append(package)
+                    print(f"   ❌ {package} is missing")
+            except:
+                missing_packages.append(package)
+                print(f"   ❌ {package} is missing")
+    
+    return missing_packages
 
 def main():
     print("Manual DS101 Environment Setup")
@@ -85,17 +156,44 @@ def main():
     venv_name = "ds101_manual"
     venv_path = os.path.join(current_dir, venv_name)
     
-    print(f"Creating virtual environment at: {venv_path}")
+    print(f"Checking virtual environment at: {venv_path}")
     
-    # Step 1: Remove existing environment if it exists
-    if os.path.exists(venv_path):
-        print("Removing existing environment...")
-        import shutil
-        shutil.rmtree(venv_path)
+    # Step 1: Check if environment exists
+    env_exists = os.path.exists(venv_path)
     
-    # Step 2: Create virtual environment
-    print("Creating new virtual environment...")
-    venv.create(venv_path, with_pip=True)
+    if env_exists:
+        print("✅ Virtual environment already exists")
+        
+        # Get Python executable path for existing environment
+        if platform.system() == "Windows":
+            python_exe = os.path.join(venv_path, "Scripts", "python.exe")
+        else:
+            python_candidate = os.path.join(venv_path, "bin", "python")
+            python3_candidate = os.path.join(venv_path, "bin", "python3")
+            
+            if platform.system() == "Darwin":  # macOS
+                python_exe = python3_candidate if os.path.exists(python3_candidate) else python_candidate
+            else:  # Linux/Ubuntu
+                python_exe = python_candidate if os.path.exists(python_candidate) else python3_candidate
+        
+        # Check if Python executable exists and works
+        try:
+            subprocess.run([python_exe, "--version"], check=True, capture_output=True)
+            print(f"✅ Python executable working: {python_exe}")
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            print("❌ Python executable not working, recreating environment...")
+            env_exists = False
+    
+    if not env_exists:
+        # Remove existing broken environment if it exists
+        if os.path.exists(venv_path):
+            print("🗑️ Removing broken environment...")
+            import shutil
+            shutil.rmtree(venv_path)
+        
+        # Step 2: Create virtual environment
+        print("📦 Creating new virtual environment...")
+        venv.create(venv_path, with_pip=True)
     
     # Step 3: Get Python executable path
     if platform.system() == "Windows":
@@ -168,32 +266,65 @@ def main():
         "requests"
     ]
     
-    print("📦 Installing packages...")
-    for package in packages:
-        print(f"   Installing {package}...")
+    # Check which packages are missing
+    if env_exists:
+        missing_packages = check_packages_installed(python_exe, packages)
+        if not missing_packages:
+            print("✅ All required packages are already installed!")
+        else:
+            print(f"📦 Installing {len(missing_packages)} missing packages...")
+            packages_to_install = missing_packages
+    else:
+        print("📦 Installing all packages in new environment...")
+        packages_to_install = packages
+    
+    # Install only missing packages with real-time output
+    for package in packages_to_install:
+        print(f"\n📦 Installing {package}...")
+        print(f"   Command: {python_exe} -m pip install {package}")
+        
         try:
-            subprocess.run([python_exe, "-m", "pip", "install", package], 
-                         check=True, capture_output=True)
-            print(f"   ✅ {package} installed")
+            # Show real-time output by not capturing it
+            result = subprocess.run([python_exe, "-m", "pip", "install", package], 
+                                  check=True)
+            print(f"✅ {package} installed successfully")
         except subprocess.CalledProcessError as e:
-            print(f"   ❌ Failed to install {package}: {e}")
+            print(f"❌ Failed to install {package}")
+            print(f"💡 You may need to install this manually: {python_exe} -m pip install {package}")
+            print(f"Error details: {e}")
     
     # Step 5: Register Jupyter kernel
     kernel_name = "ds101-manual"
     display_name = "Python 3 (DS101 Manual)"
     
-    print(f"🔧 Registering Jupyter kernel: {display_name}")
+    # Check if kernel already exists
     try:
-        subprocess.run([
-            python_exe, "-m", "ipykernel", "install",
-            "--user",
-            "--name", kernel_name,
-            "--display-name", display_name
-        ], check=True, capture_output=True)
-        print("✅ Kernel registered successfully")
+        result = subprocess.run([python_exe, "-m", "jupyter", "kernelspec", "list"], 
+                              capture_output=True, text=True)
+        if kernel_name in result.stdout:
+            print(f"✅ Jupyter kernel '{display_name}' already exists")
+        else:
+            print(f"🔧 Registering Jupyter kernel: {display_name}")
+            subprocess.run([
+                python_exe, "-m", "ipykernel", "install",
+                "--user",
+                "--name", kernel_name,
+                "--display-name", display_name
+            ], check=True, capture_output=True)
+            print("✅ Kernel registered successfully")
     except subprocess.CalledProcessError as e:
-        print(f"❌ Failed to register kernel: {e}")
-        return
+        print(f"⚠️ Could not check/register kernel (this is usually OK): {e}")
+        # Try to register anyway
+        try:
+            subprocess.run([
+                python_exe, "-m", "ipykernel", "install",
+                "--user",
+                "--name", kernel_name,
+                "--display-name", display_name
+            ], check=True, capture_output=True)
+            print("✅ Kernel registered successfully")
+        except subprocess.CalledProcessError as e2:
+            print(f"❌ Failed to register kernel: {e2}")
     
     # Step 5.5: Setup NLP resources
     print("\n📚 Setting up NLP resources...")
