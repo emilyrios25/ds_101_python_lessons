@@ -11,8 +11,15 @@
 *.sln.docstates
 *.env
 
-# User-specific files (MonoDevelop/Xamarin Studio)
-*.userprefs
+# User-specific files (MonoDevelop/Xamarin Studio# Reddit scraping output files
+reddit_comments_*.csv
+reddit_text_analysis_*.csv
+reddit_voyant_*.txt
+
+# Exception: Include backup/sample data files for lessons
+!lesson_1_scraping_reddit/data/backup/reddit_text_analysis_*.csv
+!lesson_1_scraping_reddit/data/backup/reddit_voyant_*.txt
+!lesson_1_scraping_reddit/data/backup/*.zip.userprefs
 
 # Mono auto generated files
 mono_crash.*
@@ -348,9 +355,9 @@ reddit_config.py
 *.env
 
 # Reddit scraping output files
-reddit_comments_*.csv
-reddit_text_analysis_*.csv
-reddit_voyant_*.txt
+#reddit_comments_*.csv
+#reddit_text_analysis_*.csv
+#reddit_voyant_*.txt
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
