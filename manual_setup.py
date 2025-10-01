@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Manual Virtual Environment Setup for DS101
 A simpler, more reliable approach that ensures VS Code recognition
@@ -102,7 +102,28 @@ def main():
         python_exe = os.path.join(venv_path, "Scripts", "python.exe")
         activate_script = os.path.join(venv_path, "Scripts", "activate.bat")
     else:
-        python_exe = os.path.join(venv_path, "bin", "python")
+        # Unix-like systems (Linux/Mac) - check for both python and python3
+        python_candidate = os.path.join(venv_path, "bin", "python")
+        python3_candidate = os.path.join(venv_path, "bin", "python3")
+        
+        # Platform-specific preference order
+        if platform.system() == "Darwin":  # macOS
+            # Mac prefers python3, fallback to python
+            if os.path.exists(python3_candidate):
+                python_exe = python3_candidate
+            elif os.path.exists(python_candidate):
+                python_exe = python_candidate
+            else:
+                python_exe = python3_candidate  # Fallback
+        else:  # Linux/Ubuntu
+            # Linux prefers python, fallback to python3
+            if os.path.exists(python_candidate):
+                python_exe = python_candidate
+            elif os.path.exists(python3_candidate):
+                python_exe = python3_candidate
+            else:
+                python_exe = python_candidate  # Fallback
+        
         activate_script = os.path.join(venv_path, "bin", "activate")
     
     print(f"🐍 Python executable: {python_exe}")
