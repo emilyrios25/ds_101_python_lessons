@@ -46,7 +46,7 @@ def setup_reddit_connection():
     # Method 2: Try encrypted config file
     if not reddit_username or not reddit_password:
         try:
-            from lesson_1_scraping_reddit.reddit_config_encrypted import (
+            from lesson_1_scraping_reddit.config.reddit_config_encrypted import (
                 ENCRYPTED_USERNAME, ENCRYPTED_PASSWORD, ENCRYPTION_KEY,
                 REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, USER_AGENT
             )

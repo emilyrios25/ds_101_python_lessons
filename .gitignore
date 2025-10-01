@@ -433,3 +433,8 @@ FodyWeavers.xsd
 encrypted_credentials.py
 lesson_1_scraping_reddit/encrypt_credentials.py
 gazetteer.py
+
+# Python virtual environment
+ds101_env/
+ds101_manual/
+.vscode/
